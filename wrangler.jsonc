@@ -6,4 +6,6 @@
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page",
   },
+  // Required by `wrangler preview` (Workers Builds' preview command for non-main branches).
+  "previews": {},
 }

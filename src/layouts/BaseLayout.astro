@@ -1,0 +1,300 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Absolute or root-relative URL of the Open Graph image for this page. */
+  image?: string;
+  /** Keep the page out of search results and omit its canonical URL. */
+  noindex?: boolean;
+}
+
+const SITE_NAME = "Zach Ross";
+
+const { title, description, image, noindex = false } = Astro.props;
+
+const fullTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`;
+
+// Normalize to the no-trailing-slash, no-extension form used everywhere.
+const path =
+  Astro.url.pathname.replace(/(\/index)?\.html$/, "").replace(/\/+$/, "") ||
+  "/";
+const canonical = new URL(path, Astro.site).href;
+const imageUrl = image ? new URL(image, Astro.site).href : undefined;
+
+const navLinks = [
+  { href: "/projects", label: "Projects" },
+  { href: "/about", label: "About" },
+];
+
+const isCurrent = (href: string) =>
+  path === href || path.startsWith(`${href}/`);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && <link rel="canonical" href={canonical} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    <meta
+      name="twitter:card"
+      content={imageUrl ? "summary_large_image" : "summary"}
+    />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="generator" content={Astro.generator} />
+
+    {/* Inline so the saved theme applies before first paint. Its sha256 hash must be in the CSP in public/_headers. */}
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const prefersDark = matchMedia("(prefers-color-scheme: dark)");
+        try {
+          const saved = localStorage.getItem("theme");
+          if (saved === "light" || saved === "dark") root.dataset.theme = saved;
+        } catch {}
+        root.classList.add("js");
+
+        const isDark = () =>
+          root.dataset.theme
+            ? root.dataset.theme === "dark"
+            : prefersDark.matches;
+        const sync = () => {
+          for (const el of document.querySelectorAll("[data-theme-toggle]")) {
+            el.setAttribute("aria-pressed", String(isDark()));
+          }
+        };
+
+        document.addEventListener("DOMContentLoaded", sync);
+        prefersDark.addEventListener("change", sync);
+        document.addEventListener("click", (event) => {
+          if (!(event.target instanceof Element)) return;
+          if (!event.target.closest("[data-theme-toggle]")) return;
+          const next = isDark() ? "light" : "dark";
+          root.dataset.theme = next;
+          try {
+            localStorage.setItem("theme", next);
+          } catch {}
+          sync();
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a
+          class="site-name"
+          href="/"
+          aria-current={path === "/" ? "page" : undefined}
+        >
+          {SITE_NAME}
+        </a>
+        <nav aria-label="Main">
+          <ul>
+            {navLinks.map(({ href, label }) => (
+              <li>
+                <a
+                  href={href}
+                  aria-current={isCurrent(href) ? "page" : undefined}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <button
+          class="theme-toggle"
+          type="button"
+          aria-label="Dark theme"
+          aria-pressed="false"
+          data-theme-toggle
+        >
+          <svg
+            class="icon-moon"
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+          <svg
+            class="icon-sun"
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <g
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+            </g>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="main" class="container" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>
+          <a href="mailto:zach@zachross.io">zach@zachross.io</a>
+        </p>
+        <p>
+          © {new Date().getFullYear()} {SITE_NAME}
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+    z-index: 10;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus {
+    transform: none;
+  }
+
+  .site-header {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    padding-block: var(--space-3);
+  }
+
+  .site-name {
+    margin-right: auto;
+    color: var(--color-text);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  nav ul {
+    display: flex;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  nav a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  nav a:hover,
+  nav a[aria-current="page"] {
+    color: var(--color-text);
+  }
+
+  nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.35em;
+  }
+
+  /* The toggle needs JS, so it stays hidden until the head script runs. */
+  .theme-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    color: var(--color-text);
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+
+  :global(.js) .theme-toggle {
+    display: inline-flex;
+  }
+
+  .theme-toggle:hover {
+    background: var(--color-surface);
+  }
+
+  .theme-toggle[aria-pressed="true"] .icon-moon,
+  .theme-toggle[aria-pressed="false"] .icon-sun {
+    display: none;
+  }
+
+  main {
+    flex: 1;
+    padding-block: var(--space-5) var(--space-6);
+  }
+
+  main:focus {
+    outline: none;
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 var(--space-4);
+    padding-block: var(--space-4);
+  }
+
+  .footer-inner p {
+    margin: 0;
+  }
+</style>
