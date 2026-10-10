@@ -22,6 +22,7 @@ Personal website and portfolio for Zach Ross, a software engineer. Its primary a
 - `npm run preview`: serve the built `dist/` locally
 - `npm run format`: run Prettier over the repo
 - `npx astro check`: type-check `.astro` files and content schemas (needs `@astrojs/check` and `typescript` as dev dependencies)
+- `npm run check:csp`: after a build, verify every inline script in `dist/` is allowed by hash in the CSP, with no stale hashes or inline styles
 
 Run `npm run build` and `npx astro check` before calling any task done.
 
@@ -86,7 +87,7 @@ wrangler.jsonc      Workers static-assets config (assets dir = dist/, 404 handli
   - `Referrer-Policy: strict-origin-when-cross-origin`
   - `Permissions-Policy`
 
-  Update the CSP whenever a new external origin is introduced. The Cloudflare analytics beacon needs to be allowed. A static site can't use nonces, so every inline script (and any inline style Astro emits) must be allowed by its `sha256-` hash in the CSP. Whenever an inline script changes, regenerate its hash and update `_headers`, then confirm the browser console shows no CSP violations in `npm run preview`.
+  Update the CSP whenever a new external origin is introduced. The Cloudflare analytics beacon needs to be allowed. A static site can't use nonces, so every inline script (and any inline style Astro emits) must be allowed by its `sha256-` hash in the CSP. Whenever an inline script changes, update its hash in `_headers` (`npm run check:csp` prints the expected one), then confirm the browser console shows no CSP violations on the branch's Cloudflare preview URL. `npm run preview` doesn't apply `_headers`, so it can't catch them.
 
 - **Dependencies:** Keep them minimal. Ask before adding any dependency, including dev and build-time ones (e.g. satori/resvg for OG images). The exceptions are the dependencies this file already names.
 - **Responsiveness:** Must work at 360px wide with no horizontal scroll.
@@ -103,7 +104,7 @@ Check off steps as they land. Once the site is live, move what's left to GitHub 
 - [x] 1. Scaffold Astro (minimal template, TS strict), set `site`, trailing-slash config, `.nvmrc`, Prettier, `wrangler.jsonc`, add the integrations, and push to GitHub.
 - [x] 2. Build `BaseLayout` with all head tags, global styles, the theme setup, and the 404 page.
 - [x] 3. Add content collections and schemas, with one placeholder project.
-- [x] 4. Build the pages: home, about, and the projects list and detail pages. Link `/resume.pdf` once Zach adds it.
+- [x] 4. Build the pages: home, about, and the projects list and detail pages.
 - [x] 5. Add OG image generation, sitemap, `robots.txt`, favicon set, and JSON-LD. Have `BaseLayout` default `image` to each page's generated OG image, so every page emits `og:image` and the `summary_large_image` Twitter card.
 - [ ] 6. Add `_headers` (with inline-script hashes), the CI workflow (astro check, build, lychee link check), and Renovate.
-- [ ] 7. Replace placeholders with real content, then do the Lighthouse and axe pass.
+- [ ] 7. Replace placeholders with real content, then do the Lighthouse and axe pass. Add Zach's resume at `public/resume.pdf` (a copy without personal phone or email) and link it from the home page and the About contact section, replacing the TODO comments there.
