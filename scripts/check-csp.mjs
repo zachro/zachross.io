@@ -1,6 +1,6 @@
 // Verifies that the CSP in dist/_headers allows every inline script in the
-// built HTML by hash, lists no stale hashes, and that no inline styles exist
-// (the CSP has no 'unsafe-inline' for styles). Run after `npm run build`.
+// built HTML by hash, lists no stale hashes, and that no inline styles or
+// data: URIs in CSS exist (the CSP allows neither). Run after `npm run build`.
 import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
@@ -16,9 +16,10 @@ const allowed = new Set(
     ?.map((h) => h.slice(1, -1)) ?? [],
 );
 
-const htmlFiles = (await readdir(dist, { recursive: true }))
-  .filter((f) => f.endsWith(".html"))
-  .map((f) => join(dist, f));
+const files = (await readdir(dist, { recursive: true })).map((f) =>
+  join(dist, f),
+);
+const htmlFiles = files.filter((f) => f.endsWith(".html"));
 
 const found = new Map(); // hash -> first file it appears in
 const errors = [];
@@ -41,6 +42,12 @@ for (const file of htmlFiles) {
   }
 }
 
+for (const file of files.filter((f) => f.endsWith(".css"))) {
+  if (/url\(\s*["']?data:/.test(await readFile(file, "utf8"))) {
+    errors.push(`${file}: data: URI found; the CSP will block it`);
+  }
+}
+
 for (const [hash, file] of found) {
   if (!allowed.has(hash)) {
     errors.push(
@@ -57,7 +64,7 @@ for (const hash of allowed) {
 if (errors.length > 0) {
   console.error(
     `CSP check failed:\n${errors.map((e) => `  - ${e}`).join("\n")}\n` +
-      "Update the script-src hashes in public/_headers.",
+      "Fix the inline content, or update the script-src hashes in public/_headers.",
   );
   process.exit(1);
 }
