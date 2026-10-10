@@ -1,7 +1,10 @@
 ---
+import { Picture } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { getPublishedProjects } from "../lib/projects";
+import { EMAIL } from "../lib/site";
+import headshot from "../assets/headshot.jpeg";
 
 const projects = await getPublishedProjects();
 const featured = projects.filter((p) => p.data.featured);
@@ -13,8 +16,26 @@ const shown = (featured.length > 0 ? featured : projects).slice(0, 3);
   description="Zach Ross is a software engineer working on backend systems, data pipelines, and practical AI. Five years at Amazon Music; now building MCP infrastructure for self-hosted LLM assistants."
 >
   <section class="intro" aria-labelledby="intro-heading">
-    <h1 id="intro-heading">Zach Ross</h1>
-    <p class="tagline">Software engineer: backend, data, and practical AI.</p>
+    <div class="intro-header">
+      <Picture
+        src={headshot}
+        alt="Headshot of Zach Ross"
+        class="headshot"
+        formats={["avif", "webp"]}
+        width={384}
+        height={384}
+        widths={[128, 256, 384]}
+        sizes="(min-width: 40rem) 128px, 112px"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <div>
+        <h1 id="intro-heading">Zach Ross</h1>
+        <p class="tagline">
+          Software engineer: backend, data, and practical AI.
+        </p>
+      </div>
+    </div>
     <p class="lede">
       I build the plumbing that lets LLMs work safely with real business
       systems: MCP connectors that give AI assistants access to operational data
@@ -24,7 +45,7 @@ const shown = (featured.length > 0 ? featured : projects).slice(0, 3);
     </p>
     <ul class="actions">
       <li>
-        <a class="button primary" href="mailto:zach@zachross.io">
+        <a class="button primary" href={`mailto:${EMAIL}`}>
           Email me
         </a>
       </li>
@@ -61,6 +82,39 @@ const shown = (featured.length > 0 ? featured : projects).slice(0, 3);
 </BaseLayout>
 
 <style>
+  /* Photo above the name on narrow screens, beside it from 40rem up. */
+  .intro-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 40rem) {
+    .intro-header {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-5);
+    }
+  }
+
+  .headshot {
+    flex-shrink: 0;
+    width: 112px;
+    height: 112px;
+    object-fit: cover;
+    border-radius: 1rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  @media (min-width: 40rem) {
+    .headshot {
+      width: 128px;
+      height: 128px;
+    }
+  }
+
   .intro h1 {
     margin-block: 0 var(--space-2);
   }
