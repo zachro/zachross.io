@@ -95,7 +95,10 @@ wrangler.jsonc      Workers static-assets config (assets dir = dist/, 404 handli
 ## Contact & links
 
 - Email: zach@zachross.io
-- GitHub / LinkedIn: TODO, fill in real URLs
+- GitHub: https://github.com/zachro
+- LinkedIn: https://www.linkedin.com/in/zachary-ross-aa99b195
+
+These live in `src/lib/site.ts`; update both places together.
 
 ## Roadmap
 

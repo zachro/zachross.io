@@ -39,7 +39,7 @@ const linkList = [
         <div>
           <dt>Date</dt>
           <dd>
-            <time datetime={date.toISOString().slice(0, 10)}>
+            <time datetime={formatProjectDate(date)}>
               {formatProjectDate(date)}
             </time>
           </dd>

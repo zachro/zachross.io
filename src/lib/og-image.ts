@@ -50,8 +50,12 @@ const h = (
   props: { ...props, children: children.length === 1 ? children[0] : children },
 });
 
+/** Shorten to at most `max` characters, cutting at a word boundary. */
 function truncate(text: string, max: number) {
-  return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max - 1);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > 0 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:.]+$/, "")}…`;
 }
 
 export async function renderOgImage({ title, description }: OgPage) {
@@ -94,8 +98,8 @@ export async function renderOgImage({ title, description }: OgPage) {
       ),
       h(
         "div",
-        { style: { fontSize: 30, lineHeight: 1.45, color: colors.muted } },
-        truncate(description, 140),
+        { style: { fontSize: 28, lineHeight: 1.45, color: colors.muted } },
+        truncate(description, 175),
       ),
     ),
     h(

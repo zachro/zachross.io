@@ -18,12 +18,13 @@ export async function getOgPages(): Promise<OgPage[]> {
     {
       slug: "index",
       title: "Zach Ross",
-      description: "Software engineer. See my projects and get in touch.",
+      description: "Software engineer: backend, data, and practical AI.",
     },
     {
       slug: "about",
       title: "About",
-      description: "Background, experience, and how to get in touch.",
+      description:
+        "MCP infrastructure for AI assistants, five years at Amazon Music, and how to get in touch.",
     },
     {
       slug: "projects",
