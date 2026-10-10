@@ -14,4 +14,11 @@ export default defineConfig({
     inlineStylesheets: "never",
   },
   integrations: [mdx(), sitemap()],
+  vite: {
+    build: {
+      // Never inline small assets (e.g. font subsets) as data: URIs; the CSP
+      // only allows fonts and images from 'self'.
+      assetsInlineLimit: 0,
+    },
+  },
 });

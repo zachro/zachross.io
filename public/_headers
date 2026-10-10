@@ -1,0 +1,13 @@
+# Security headers for every response. Served by Workers static assets.
+# The script-src hash allows the inline theme script in BaseLayout; regenerate it
+# whenever that script changes (`npm run check:csp` prints the expected hash).
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-DbC5+slkh+u+vPauFFNTpK38V90SRuqyMPSPP9uao1U=' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self'; style-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()
+
+# Astro's hashed build assets never change content under the same name.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
