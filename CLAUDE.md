@@ -35,7 +35,7 @@ Run `npm run build` and `npx astro check` before calling any task done.
 ## Structure
 
 ```
-public/             served as-is: favicon.svg, robots.txt, resume.pdf, _headers
+public/             served as-is: favicons, robots.txt, resume.pdf, _headers
 src/
   content.config.ts collection schemas
   content/
@@ -46,10 +46,18 @@ src/
     rss.xml.ts            only once posts exist
     404.astro
   layouts/BaseLayout.astro   all <head> tags, nav, footer
+  components/       shared components (ProjectCard)
+  lib/
+    projects.ts     getPublishedProjects(), formatProjectDate()
+    og.ts           pages that get OG images
+    og-image.ts     OG image renderer (satori + sharp)
+    site.ts         email, GitHub, and LinkedIn URLs
   assets/           images processed by astro:assets
   styles/global.css
-wrangler.jsonc      Workers static-assets config (assets dir = dist/, 404 handling)
-.github/workflows/checks.yml  CI: install, astro check, build, link check
+scripts/check-csp.mjs   CSP hash check (npm run check:csp)
+wrangler.jsonc      Workers static-assets config (assets dir = dist/, 404 handling, previews)
+renovate.json       dependency updates (14-day minimum release age, no automerge)
+.github/workflows/checks.yml  CI: Prettier, astro check, build, CSP check, link check
 ```
 
 ## Conventions
@@ -59,11 +67,12 @@ wrangler.jsonc      Workers static-assets config (assets dir = dist/, 404 handli
   - the canonical URL (based on `site: 'https://zachross.io'`)
   - Open Graph and Twitter card tags, including the per-page OG image
   - favicon links
-  - JSON-LD `Person` schema on the home page, with `sameAs` pointing to GitHub and LinkedIn. Until real URLs are listed under Contact & links, omit `sameAs` entirely; never use placeholder URLs.
+  - JSON-LD `Person` schema on the home page, with `sameAs` pointing to GitHub and LinkedIn from `src/lib/site.ts`. Never use placeholder URLs.
 - **URLs have no trailing slash.** Set `trailingSlash: 'never'` and `build.format: 'file'` in `astro.config.mjs`. Canonical URLs, the sitemap, internal links, and the link check all follow this form (`/about`, not `/about/`).
 - **Images go in `src/assets/` and render with `<Image>` / `<Picture>`.** Only files that must keep exact URLs go in `public/`.
 - **Project frontmatter schema (starting point):** `title`, `summary`, `role`, `stack: string[]`, `date`, `links: { repo?, demo?, writeup? }`, `featured: boolean`, `draft: boolean`.
-- **Draft content never ships.** Filter out `draft: true` entries in `getStaticPaths` and in listing pages.
+- **Draft content never ships.** Filter out `draft: true` entries in `getStaticPaths` and in listing pages; `getPublishedProjects()` does this for projects.
+- **OG images:** a page gets one only if it's listed in `getOgPages()` in `src/lib/og.ts`. Add new static pages there. Keep project summaries to 175 characters or fewer so they fit the image.
 - **The resume lives at a stable URL, `/resume.pdf`.** Zach supplies this file. Never rename, move, regenerate, or edit it.
 - **Canonical host is the apex domain `zachross.io`.** `www` redirects to it, and that redirect is configured in Cloudflare, not here.
 
@@ -87,9 +96,9 @@ wrangler.jsonc      Workers static-assets config (assets dir = dist/, 404 handli
   - `Referrer-Policy: strict-origin-when-cross-origin`
   - `Permissions-Policy`
 
-  Update the CSP whenever a new external origin is introduced. The Cloudflare analytics beacon needs to be allowed. A static site can't use nonces, so every inline script (and any inline style Astro emits) must be allowed by its `sha256-` hash in the CSP. Whenever an inline script changes, update its hash in `_headers` (`npm run check:csp` prints the expected one), then confirm the browser console shows no CSP violations on the branch's Cloudflare preview URL. `npm run preview` doesn't apply `_headers`, so it can't catch them.
+  Update the CSP whenever a new external origin is introduced. The Cloudflare analytics beacon needs to be allowed. A static site can't use nonces, so every inline script must be allowed by its `sha256-` hash in the CSP. Inline styles and `data:` URIs aren't allowed at all; `inlineStylesheets: 'never'` and `assetsInlineLimit: 0` in `astro.config.mjs` keep Astro from emitting them. Whenever an inline script changes, update its hash in `_headers` (`npm run check:csp` prints the expected one), then confirm the browser console shows no CSP violations on the branch's Cloudflare preview URL. `npm run preview` doesn't apply `_headers`, so it can't catch them.
 
-- **Dependencies:** Keep them minimal. Ask before adding any dependency, including dev and build-time ones (e.g. satori/resvg for OG images). The exceptions are the dependencies this file already names.
+- **Dependencies:** Keep them minimal. Ask before adding any dependency, including dev and build-time ones. The exceptions are the dependencies this file already names, plus these approved ones: `wrangler` (deploys), `satori` and `sharp` (OG images). Prefer versions at least 14 days old.
 - **Responsiveness:** Must work at 360px wide with no horizontal scroll.
 
 ## Contact & links
@@ -99,15 +108,3 @@ wrangler.jsonc      Workers static-assets config (assets dir = dist/, 404 handli
 - LinkedIn: https://www.linkedin.com/in/zachary-ross-aa99b195
 
 These live in `src/lib/site.ts`; update both places together.
-
-## Roadmap
-
-Check off steps as they land. Once the site is live, move what's left to GitHub issues and delete this section.
-
-- [x] 1. Scaffold Astro (minimal template, TS strict), set `site`, trailing-slash config, `.nvmrc`, Prettier, `wrangler.jsonc`, add the integrations, and push to GitHub.
-- [x] 2. Build `BaseLayout` with all head tags, global styles, the theme setup, and the 404 page.
-- [x] 3. Add content collections and schemas, with one placeholder project.
-- [x] 4. Build the pages: home, about, and the projects list and detail pages.
-- [x] 5. Add OG image generation, sitemap, `robots.txt`, favicon set, and JSON-LD. Have `BaseLayout` default `image` to each page's generated OG image, so every page emits `og:image` and the `summary_large_image` Twitter card.
-- [x] 6. Add `_headers` (with inline-script hashes), the CI workflow (astro check, build, lychee link check), and Renovate.
-- [ ] 7. Replace placeholders with real content, then do the Lighthouse and axe pass. Add Zach's resume at `public/resume.pdf` (a copy without personal phone or email) and link it from the home page and the About contact section, replacing the TODO comments there.
