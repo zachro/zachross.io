@@ -104,6 +104,6 @@ Check off steps as they land. Once the site is live, move what's left to GitHub 
 - [x] 2. Build `BaseLayout` with all head tags, global styles, the theme setup, and the 404 page.
 - [x] 3. Add content collections and schemas, with one placeholder project.
 - [x] 4. Build the pages: home, about, and the projects list and detail pages. Link `/resume.pdf` once Zach adds it.
-- [ ] 5. Add OG image generation, sitemap, `robots.txt`, favicon set, and JSON-LD. Have `BaseLayout` default `image` to each page's generated OG image, so every page emits `og:image` and the `summary_large_image` Twitter card.
+- [x] 5. Add OG image generation, sitemap, `robots.txt`, favicon set, and JSON-LD. Have `BaseLayout` default `image` to each page's generated OG image, so every page emits `og:image` and the `summary_large_image` Twitter card.
 - [ ] 6. Add `_headers` (with inline-script hashes), the CI workflow (astro check, build, lychee link check), and Renovate.
 - [ ] 7. Replace placeholders with real content, then do the Lighthouse and axe pass.
