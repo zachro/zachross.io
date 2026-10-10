@@ -10,15 +10,17 @@ const shown = (featured.length > 0 ? featured : projects).slice(0, 3);
 
 <BaseLayout
   title="Zach Ross"
-  description="Zach Ross is a software engineer. See his projects and get in touch."
+  description="Zach Ross is a software engineer working on backend systems, data pipelines, and practical AI. Five years at Amazon Music; now building MCP infrastructure for self-hosted LLM assistants."
 >
   <section class="intro" aria-labelledby="intro-heading">
     <h1 id="intro-heading">Zach Ross</h1>
-    <!-- TODO(R7): replace placeholder copy with the real pitch. -->
-    <p class="tagline">Software engineer.</p>
+    <p class="tagline">Software engineer: backend, data, and practical AI.</p>
     <p class="lede">
-      Placeholder introduction: one or two sentences on what I build, the kind
-      of problems I like, and what I'm looking for next.
+      I build the plumbing that lets LLMs work safely with real business
+      systems: MCP connectors that give AI assistants access to operational data
+      without exposing customer or financial information. Before that, I spent
+      five years at Amazon Music building the data pipelines, APIs, and payment
+      systems behind music royalties.
     </p>
     <ul class="actions">
       <li>
@@ -31,7 +33,11 @@ const shown = (featured.length > 0 ? featured : projects).slice(0, 3);
           See projects
         </a>
       </li>
-      <!-- TODO: add a Resume link to /resume.pdf once Zach adds the file. -->
+      <li>
+        <a class="button" href="/resume.pdf">
+          Resume (PDF)
+        </a>
+      </li>
     </ul>
   </section>
 

@@ -6,6 +6,7 @@ import "@fontsource/jetbrains-mono/400-italic.css";
 import "@fontsource/jetbrains-mono/700.css";
 import "../styles/global.css";
 import { getOgPages, ogSlugForPath } from "../lib/og";
+import { EMAIL, GITHUB_URL, LINKEDIN_URL } from "../lib/site";
 import bodyFont from "@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2?url";
 
 interface Props {
@@ -39,8 +40,7 @@ const defaultImage =
 const imageSrc = image ?? defaultImage;
 const imageUrl = imageSrc ? new URL(imageSrc, Astro.site).href : undefined;
 
-// Structured data for search engines, home page only. Add `sameAs` with the
-// GitHub and LinkedIn URLs once they're listed in CLAUDE.md; never placeholders.
+// Structured data for search engines, home page only.
 const personJsonLd =
   path === "/"
     ? JSON.stringify({
@@ -49,7 +49,8 @@ const personJsonLd =
         name: SITE_NAME,
         url: new URL("/", Astro.site).href,
         jobTitle: "Software Engineer",
-        email: "mailto:zach@zachross.io",
+        email: `mailto:${EMAIL}`,
+        sameAs: [GITHUB_URL, LINKEDIN_URL],
       })
     : undefined;
 
@@ -221,9 +222,17 @@ const isCurrent = (href: string) =>
 
     <footer class="site-footer">
       <div class="container footer-inner">
-        <p>
-          <a href="mailto:zach@zachross.io">zach@zachross.io</a>
-        </p>
+        <ul class="footer-links">
+          <li>
+            <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+          </li>
+          <li>
+            <a href={GITHUB_URL}>GitHub</a>
+          </li>
+          <li>
+            <a href={LINKEDIN_URL}>LinkedIn</a>
+          </li>
+        </ul>
         <p>
           © {new Date().getFullYear()} {SITE_NAME}
         </p>
@@ -352,5 +361,14 @@ const isCurrent = (href: string) =>
 
   .footer-inner p {
     margin: 0;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 </style>

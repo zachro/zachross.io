@@ -1,28 +1,47 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { EMAIL, GITHUB_URL, LINKEDIN_URL } from "../lib/site";
 ---
 
 <BaseLayout
   title="About"
-  description="About Zach Ross: background, experience, and how to get in touch."
+  description="About Zach Ross: software engineer building MCP infrastructure for AI assistants, previously five years on Amazon Music's royalties and FinTech teams."
 >
   <h1>About</h1>
-  <!-- TODO(R7): replace placeholder copy with Zach's real bio. -->
   <div class="prose">
     <p>
-      Placeholder bio: a short paragraph on who I am, where I've worked, and
-      what I focus on as a software engineer.
+      I'm a software engineer at Haselwood Group, where I design and build our
+      Model Context Protocol (MCP) architecture in Python with fastmcp. It
+      serves self-hosted AI assistants running on Ollama. Connecting a model to
+      data is the easy part. The harder engineering problem is deciding what the
+      model should never see, so I design connector boundaries over our data
+      pipelines and APIs that let internal workflows be automated while
+      sensitive customer and financial data stays out of reach. We're a small
+      team, so I also own our web applications, APIs, data pipelines, and
+      infrastructure end to end.
     </p>
     <p>
-      A second paragraph on how I like to work, the tools and problems I enjoy,
-      and anything outside of work worth mentioning.
+      Before that, I spent five years at Amazon Music on the Music Royalties and
+      FinTech teams, where I was promoted from SDE I to SDE II. I built Apache
+      Spark pipelines on AWS EMR that calculated royalties and fed accounting
+      and vendor reporting, along with the APIs, ledger, and disbursement
+      systems that paid labels and publishers.
+    </p>
+    <p>
+      My path into engineering wasn't the typical one. I studied German and
+      History, worked as a German-language catalog specialist for Prime Video,
+      and moved into software through Amazon's Technical Academy. That route
+      taught me to learn quickly and to stay close to the people who actually
+      use what I build, whether that's accountants, music partners, or the
+      business users relying on our assistants today.
     </p>
 
     <h2>Get in touch</h2>
     <p>
-      The best way to reach me is email:{" "}
-      <a href="mailto:zach@zachross.io">zach@zachross.io</a>.
+      The best way to reach me is email: <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+      . You can also find me on <a href={GITHUB_URL}>GitHub</a> and{" "}
+      <a href={LINKEDIN_URL}>LinkedIn</a>, or download my{" "}
+      <a href="/resume.pdf">resume (PDF)</a>.
     </p>
-    <!-- TODO: link /resume.pdf here once Zach adds the file. -->
   </div>
 </BaseLayout>

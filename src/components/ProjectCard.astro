@@ -18,10 +18,8 @@ const Heading = `h${headingLevel}` as const;
     <a href={`/projects/${project.id}`}>{title}</a>
   </Heading>
   <p class="meta">
-    <time datetime={date.toISOString().slice(0, 10)}>
-      {formatProjectDate(date)}
-    </time>{" "}
-    · {role}
+    <time datetime={formatProjectDate(date)}>{formatProjectDate(date)}</time> ·{" "}
+    {role}
   </p>
   <p class="summary">{summary}</p>
   <ul class="stack" aria-label="Tech stack">
