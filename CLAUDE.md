@@ -9,7 +9,7 @@ Personal website and portfolio for Zach Ross, a software engineer. Its primary a
 - **Runtime/tooling:** Current Node LTS, pinned in `.nvmrc` and `package.json` `engines`. Use npm only (`package-lock.json` is committed); never introduce pnpm, yarn, or bun lockfiles.
 - **Content:** Markdown/MDX in Astro content collections, with schemas validated by zod in `src/content.config.ts`.
 - **Styling:** Plain modern CSS with custom properties in `src/styles/global.css`. Use component-scoped `<style>` blocks for component styles. Don't add Tailwind or a UI framework without asking.
-- **Fonts:** Self-hosted via `@fontsource/*`. No Google Fonts or other third-party font CDNs.
+- **Fonts:** JetBrains Mono for all text, self-hosted via `@fontsource/jetbrains-mono` (weights 400, 400 italic, 700). No Google Fonts or other third-party font CDNs.
 - **Integrations:** `@astrojs/sitemap`, `@astrojs/mdx`, `@astrojs/rss` (once posts exist).
 - **Formatting:** Prettier with `prettier-plugin-astro`, default config. Run `npm run format` before committing.
 - **Hosting:** Cloudflare Workers with static assets (not Pages), configured in `wrangler.jsonc` and deployed automatically from GitHub. Pushes to `main` go to production, and other branches get preview URLs.
@@ -106,4 +106,4 @@ Check off steps as they land. Once the site is live, move what's left to GitHub 
 - [x] 4. Build the pages: home, about, and the projects list and detail pages. Link `/resume.pdf` once Zach adds it.
 - [ ] 5. Add OG image generation, sitemap, `robots.txt`, favicon set, and JSON-LD. Have `BaseLayout` default `image` to each page's generated OG image, so every page emits `og:image` and the `summary_large_image` Twitter card.
 - [ ] 6. Add `_headers` (with inline-script hashes), the CI workflow (astro check, build, lychee link check), and Renovate.
-- [ ] 7. Replace placeholders with real content, then do the Lighthouse and axe pass. Decide on a web font (self-hosted via `@fontsource`) or keep the system font stack.
+- [ ] 7. Replace placeholders with real content, then do the Lighthouse and axe pass.

@@ -1,5 +1,11 @@
 ---
+// Only the weights the site uses. Each covers several subsets via unicode-range;
+// browsers download just the subsets a page needs.
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/400-italic.css";
+import "@fontsource/jetbrains-mono/700.css";
 import "../styles/global.css";
+import bodyFont from "@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2?url";
 
 interface Props {
   title: string;
@@ -54,6 +60,13 @@ const isCurrent = (href: string) =>
       content={imageUrl ? "summary_large_image" : "summary"}
     />
 
+    <link
+      rel="preload"
+      href={bodyFont}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="generator" content={Astro.generator} />
 
@@ -208,8 +221,15 @@ const isCurrent = (href: string) =>
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2) var(--space-4);
+    gap: var(--space-2) var(--space-3);
     padding-block: var(--space-3);
+  }
+
+  @media (min-width: 40rem) {
+    .header-inner,
+    nav ul {
+      column-gap: var(--space-4);
+    }
   }
 
   .site-name {
@@ -221,7 +241,7 @@ const isCurrent = (href: string) =>
 
   nav ul {
     display: flex;
-    gap: var(--space-4);
+    gap: var(--space-3);
     margin: 0;
     padding: 0;
     list-style: none;
