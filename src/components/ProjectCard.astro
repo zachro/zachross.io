@@ -1,0 +1,98 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatProjectDate } from "../lib/projects";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  /** Heading level for the title, so cards fit the page's outline. */
+  headingLevel?: 2 | 3;
+}
+
+const { project, headingLevel = 2 } = Astro.props;
+const { title, summary, role, stack, date } = project.data;
+const Heading = `h${headingLevel}` as const;
+---
+
+<article class="card">
+  <Heading class="title">
+    <a href={`/projects/${project.id}`}>{title}</a>
+  </Heading>
+  <p class="meta">
+    <time datetime={date.toISOString().slice(0, 10)}>
+      {formatProjectDate(date)}
+    </time>{" "}
+    · {role}
+  </p>
+  <p class="summary">{summary}</p>
+  <ul class="stack" aria-label="Tech stack">
+    {stack.map((item) => (
+      <li>{item}</li>
+    ))}
+  </ul>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .card:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  .title {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  .title a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  /* Make the whole card clickable while keeping one link in the a11y tree. */
+  .title a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+  }
+
+  .title a:focus-visible {
+    outline: none;
+  }
+
+  .title a:focus-visible::after {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .meta {
+    margin: var(--space-1) 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+  }
+
+  .summary {
+    margin: var(--space-3) 0 0;
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .stack li {
+    padding: 0 var(--space-2);
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+  }
+</style>

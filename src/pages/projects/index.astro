@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import { getPublishedProjects } from "../../lib/projects";
+
+const projects = await getPublishedProjects();
+---
+
+<BaseLayout
+  title="Projects"
+  description="Projects and case studies by Zach Ross, software engineer."
+>
+  <h1>Projects</h1>
+  <p class="lede">Things I've built, with notes on how and why.</p>
+  {projects.length > 0 ? (
+    <ul class="card-list">
+      {projects.map((project) => (
+        <li>
+          <ProjectCard project={project} />
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p>Case studies are on the way.</p>
+  )}
+</BaseLayout>
+
+<style>
+  .lede {
+    margin-bottom: var(--space-5);
+    color: var(--color-text-muted);
+  }
+</style>

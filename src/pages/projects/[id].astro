@@ -1,0 +1,112 @@
+---
+import type { GetStaticPaths } from "astro";
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatProjectDate, getPublishedProjects } from "../../lib/projects";
+
+export const getStaticPaths = (async () => {
+  const projects = await getPublishedProjects();
+  return projects.map((project) => ({
+    params: { id: project.id },
+    props: { project },
+  }));
+}) satisfies GetStaticPaths;
+
+const { project } = Astro.props;
+const { title, summary, role, stack, date, links } = project.data;
+const { Content } = await render(project);
+
+const linkList = [
+  { href: links.demo, label: "Live demo" },
+  { href: links.repo, label: "Source code" },
+  { href: links.writeup, label: "Write-up" },
+].filter((link): link is { href: string; label: string } => !!link.href);
+---
+
+<BaseLayout title={title} description={summary}>
+  <article>
+    <p class="back">
+      <a href="/projects">← All projects</a>
+    </p>
+    <header class="project-header">
+      <h1>{title}</h1>
+      <p class="lede">{summary}</p>
+      <dl class="facts">
+        <div>
+          <dt>Role</dt>
+          <dd>{role}</dd>
+        </div>
+        <div>
+          <dt>Date</dt>
+          <dd>
+            <time datetime={date.toISOString().slice(0, 10)}>
+              {formatProjectDate(date)}
+            </time>
+          </dd>
+        </div>
+        <div>
+          <dt>Stack</dt>
+          <dd>{stack.join(", ")}</dd>
+        </div>
+      </dl>
+      {linkList.length > 0 && (
+        <ul class="links">
+          {linkList.map(({ href, label }) => (
+            <li>
+              <a href={href}>{label}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .back {
+    margin-top: 0;
+    font-size: 0.9375rem;
+  }
+
+  .project-header h1 {
+    margin-bottom: var(--space-2);
+  }
+
+  .lede {
+    margin-top: 0;
+    color: var(--color-text-muted);
+    font-size: 1.125rem;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--space-3);
+    margin: var(--space-4) 0;
+    padding-block: var(--space-3);
+    border-block: 1px solid var(--color-border);
+  }
+
+  .facts dt {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .facts dd {
+    margin: 0;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+</style>
