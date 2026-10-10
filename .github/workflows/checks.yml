@@ -39,8 +39,10 @@ jobs:
         run: npm run check:csp
 
       # Offline: checks internal links and assets in the built site only, so
-      # external sites being down can't fail a PR. Extensionless links like
-      # /about resolve to about.html, matching build.format: 'file'.
+      # external sites being down can't fail a PR. The remap sends extensionless
+      # links like /projects to projects.html, matching build.format: 'file'
+      # (lychee would otherwise look for projects/index.html, since the
+      # projects/ directory also exists).
       - name: Check links
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
@@ -48,7 +50,7 @@ jobs:
             --offline
             --no-progress
             --root-dir ${{ github.workspace }}/dist
-            --fallback-extensions html
+            --remap '^(file://.*/dist/[^.?#]*[^/.?#])$ $1.html'
             --index-files index.html
             --include-fragments
             'dist/**/*.html'
