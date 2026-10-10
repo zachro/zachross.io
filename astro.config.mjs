@@ -10,6 +10,8 @@ export default defineConfig({
   trailingSlash: "never",
   build: {
     format: "file",
+    // Always emit CSS as files: inline <style> tags would each need a CSP hash.
+    inlineStylesheets: "never",
   },
   integrations: [mdx(), sitemap()],
 });
