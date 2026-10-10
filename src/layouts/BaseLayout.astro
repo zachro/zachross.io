@@ -5,12 +5,16 @@ import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/400-italic.css";
 import "@fontsource/jetbrains-mono/700.css";
 import "../styles/global.css";
+import { getOgPages, ogSlugForPath } from "../lib/og";
 import bodyFont from "@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2?url";
 
 interface Props {
   title: string;
   description: string;
-  /** Absolute or root-relative URL of the Open Graph image for this page. */
+  /**
+   * Absolute or root-relative URL of the Open Graph image. Defaults to the
+   * page's generated image under /og/ when src/lib/og.ts lists it.
+   */
   image?: string;
   /** Keep the page out of search results and omit its canonical URL. */
   noindex?: boolean;
@@ -27,7 +31,27 @@ const path =
   Astro.url.pathname.replace(/(\/index)?\.html$/, "").replace(/\/+$/, "") ||
   "/";
 const canonical = new URL(path, Astro.site).href;
-const imageUrl = image ? new URL(image, Astro.site).href : undefined;
+const ogSlug = ogSlugForPath(path);
+const defaultImage =
+  !noindex && (await getOgPages()).some((page) => page.slug === ogSlug)
+    ? `/og/${ogSlug}.png`
+    : undefined;
+const imageSrc = image ?? defaultImage;
+const imageUrl = imageSrc ? new URL(imageSrc, Astro.site).href : undefined;
+
+// Structured data for search engines, home page only. Add `sameAs` with the
+// GitHub and LinkedIn URLs once they're listed in CLAUDE.md; never placeholders.
+const personJsonLd =
+  path === "/"
+    ? JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: SITE_NAME,
+        url: new URL("/", Astro.site).href,
+        jobTitle: "Software Engineer",
+        email: "mailto:zach@zachross.io",
+      })
+    : undefined;
 
 const navLinks = [
   { href: "/projects", label: "Projects" },
@@ -54,7 +78,14 @@ const isCurrent = (href: string) =>
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    {imageUrl && (
+      <>
+        <meta property="og:image" content={imageUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={fullTitle} />
+      </>
+    )}
     <meta
       name="twitter:card"
       content={imageUrl ? "summary_large_image" : "summary"}
@@ -67,7 +98,12 @@ const isCurrent = (href: string) =>
       type="font/woff2"
       crossorigin
     />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    {personJsonLd && (
+      <script is:inline type="application/ld+json" set:html={personJsonLd} />
+    )}
     <meta name="generator" content={Astro.generator} />
 
     {/* Inline so the saved theme applies before first paint. Its sha256 hash must be in the CSP in public/_headers. */}
