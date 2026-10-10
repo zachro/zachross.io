@@ -106,5 +106,5 @@ Check off steps as they land. Once the site is live, move what's left to GitHub 
 - [x] 3. Add content collections and schemas, with one placeholder project.
 - [x] 4. Build the pages: home, about, and the projects list and detail pages.
 - [x] 5. Add OG image generation, sitemap, `robots.txt`, favicon set, and JSON-LD. Have `BaseLayout` default `image` to each page's generated OG image, so every page emits `og:image` and the `summary_large_image` Twitter card.
-- [ ] 6. Add `_headers` (with inline-script hashes), the CI workflow (astro check, build, lychee link check), and Renovate.
+- [x] 6. Add `_headers` (with inline-script hashes), the CI workflow (astro check, build, lychee link check), and Renovate.
 - [ ] 7. Replace placeholders with real content, then do the Lighthouse and axe pass. Add Zach's resume at `public/resume.pdf` (a copy without personal phone or email) and link it from the home page and the About contact section, replacing the TODO comments there.
